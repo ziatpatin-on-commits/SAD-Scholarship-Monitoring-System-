@@ -1,0 +1,11 @@
+# Local/editor files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Environment/local secrets
+.env
+.env.*
+*.local
+
+# Do not commit private Supabase service-role keys.

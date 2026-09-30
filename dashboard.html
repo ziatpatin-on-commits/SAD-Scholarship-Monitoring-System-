@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholarship Monitoring System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🎓</div>
+        <div>
+          <h1>ScholarTrack</h1>
+          <span>Monitoring System</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-section="dashboard"><span>▦</span> Dashboard</button>
+        <button class="nav-item" data-section="scholars"><span>👨‍🎓</span> Scholars</button>
+        <button class="nav-item" data-section="programs"><span>🎓</span> Scholarship Programs</button>
+        <button class="nav-item" data-section="grades"><span>📝</span> Grade Submissions</button>
+        <button class="nav-item" data-section="compliance"><span>✓</span> Compliance</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="user-mini">
+          <div class="avatar" id="userAvatar">U</div>
+          <div class="user-info">
+            <strong id="userName">Loading...</strong>
+            <span id="userRole">User</span>
+          </div>
+        </div>
+        <button id="logoutBtn" class="logout-btn">↪ Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Scholarship Office</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="top-actions">
+          <span id="connectionBadge" class="badge badge-neutral">Checking connection...</span>
+          <button id="refreshBtn" class="icon-btn" title="Refresh">↻</button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard-section" class="content-section active">
+        <div class="welcome-card">
+          <div>
+            <span class="welcome-label">ACADEMIC COMPLIANCE</span>
+            <h3>Scholarship monitoring at a glance.</h3>
+            <p>Track scholars, semester submissions, verification, and scholarship compliance.</p>
+          </div>
+          <div class="welcome-art">🎓</div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-icon blue">👨‍🎓</div><div><span>Total Scholars</span><strong id="statScholars">0</strong></div></div>
+          <div class="stat-card"><div class="stat-icon amber">⏳</div><div><span>Pending Submissions</span><strong id="statPending">0</strong></div></div>
+          <div class="stat-card"><div class="stat-icon green">✓</div><div><span>Verified Submissions</span><strong id="statVerified">0</strong></div></div>
+          <div class="stat-card"><div class="stat-icon purple">★</div><div><span>Compliant</span><strong id="statCompliant">0</strong></div></div>
+          <div class="stat-card"><div class="stat-icon red">!</div><div><span>With Deficiency</span><strong id="statDeficiency">0</strong></div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-header"><div><h3>Recent Grade Submissions</h3><p>Latest semester records</p></div></div>
+            <div id="recentSubmissions" class="table-wrap"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div><h3>Scholar Status</h3><p>Current monitoring overview</p></div></div>
+            <div id="statusSummary" class="status-summary"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCHOLARS -->
+      <section id="scholars-section" class="content-section">
+        <div class="section-toolbar">
+          <div>
+            <h3>Scholar Management</h3>
+            <p>Create, view, and update scholar records.</p>
+          </div>
+          <button id="addScholarBtn" class="btn btn-primary">+ Add Scholar</button>
+        </div>
+        <div class="filter-bar">
+          <input id="scholarSearch" type="search" placeholder="Search Student ID or scholar name...">
+          <select id="scholarStatusFilter"><option value="">All Statuses</option></select>
+          <select id="scholarProgramFilter"><option value="">All Programs</option></select>
+        </div>
+        <div class="panel"><div id="scholarsTable" class="table-wrap"></div></div>
+      </section>
+
+      <!-- PROGRAMS -->
+      <section id="programs-section" class="content-section">
+        <div class="section-toolbar">
+          <div>
+            <h3>Scholarship Programs</h3>
+            <p>Configure the academic requirements for each scholarship.</p>
+          </div>
+          <button id="addProgramBtn" class="btn btn-primary">+ Add Program</button>
+        </div>
+        <div class="panel"><div id="programsTable" class="table-wrap"></div></div>
+      </section>
+
+      <!-- GRADES -->
+      <section id="grades-section" class="content-section">
+        <div class="section-toolbar">
+          <div>
+            <h3>Grade Submissions</h3>
+            <p>Submit and verify semester academic records.</p>
+          </div>
+          <button id="addGradeBtn" class="btn btn-primary">+ Submit Grades</button>
+        </div>
+        <div class="filter-bar">
+          <select id="gradeStatusFilter">
+            <option value="">All Submission Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Verified">Verified</option>
+            <option value="Returned">Returned</option>
+          </select>
+        </div>
+        <div class="panel"><div id="gradesTable" class="table-wrap"></div></div>
+      </section>
+
+      <!-- COMPLIANCE -->
+      <section id="compliance-section" class="content-section">
+        <div class="section-toolbar">
+          <div>
+            <h3>Compliance Monitoring</h3>
+            <p>Verified submissions are evaluated against the assigned scholarship rules.</p>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input id="complianceSearch" type="search" placeholder="Search scholar or Student ID...">
+          <select id="complianceFilter">
+            <option value="">All Results</option>
+            <option value="Compliant">Compliant</option>
+            <option value="With Deficiency">With Deficiency</option>
+          </select>
+        </div>
+        <div class="panel"><div id="complianceTable" class="table-wrap"></div></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- SCHOLAR MODAL -->
+  <div id="scholarModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-header"><div><h3 id="scholarModalTitle">Add Scholar</h3><p>Required fields are marked with *</p></div><button class="modal-close" data-close="scholarModal">×</button></div>
+      <form id="scholarForm">
+        <input type="hidden" id="scholarId">
+        <div class="form-grid">
+          <label>Student ID *<input id="studentId" required maxlength="50"></label>
+          <label>Full Name *<input id="fullName" required maxlength="150"></label>
+          <label>Degree Program *<input id="degreeProgram" required maxlength="150"></label>
+          <label>Year Level *<select id="yearLevel" required><option value="">Select</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>5th Year</option><option>Graduate</option></select></label>
+          <label>Scholarship Program *<select id="scholarshipId" required></select></label>
+          <label>Status<select id="scholarStatus"><option>Active</option><option>Pending Submission</option><option>For Verification</option><option>Compliant</option><option>With Deficiency</option><option>Probationary</option><option>For Renewal</option><option>Renewed</option><option>Disqualified</option></select></label>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn btn-light" data-close="scholarModal">Cancel</button><button type="submit" class="btn btn-primary">Save Scholar</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PROGRAM MODAL -->
+  <div id="programModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-header"><div><h3 id="programModalTitle">Add Scholarship Program</h3><p>Set institution-specific academic rules.</p></div><button class="modal-close" data-close="programModal">×</button></div>
+      <form id="programForm">
+        <input type="hidden" id="programId">
+        <div class="form-grid">
+          <label>Program Name *<input id="programName" required maxlength="150"></label>
+          <label>Required GWA *<input id="requiredGwa" type="number" step="0.01" min="0" max="100" required></label>
+          <label>Minimum Units *<input id="minUnits" type="number" min="0" step="1" required></label>
+          <label class="checkbox-label"><input id="allowFailing" type="checkbox"> Allow failing grades</label>
+          <label>Status<select id="programActive"><option value="true">Active</option><option value="false">Inactive</option></select></label>
+        </div>
+        <p class="form-note">This implementation treats a lower GWA as better (for example, 1.75 satisfies a 2.00 maximum GWA). Change the SQL/JS comparison if your institution uses the opposite scale.</p>
+        <div class="modal-actions"><button type="button" class="btn btn-light" data-close="programModal">Cancel</button><button type="submit" class="btn btn-primary">Save Program</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- GRADE MODAL -->
+  <div id="gradeModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-header"><div><h3>Submit Semester Grades</h3><p>New submissions start as Pending.</p></div><button class="modal-close" data-close="gradeModal">×</button></div>
+      <form id="gradeForm">
+        <div class="form-grid">
+          <label>Scholar *<select id="gradeScholarId" required></select></label>
+          <label>Academic Year *<input id="academicYear" placeholder="2026-2027" required maxlength="20"></label>
+          <label>Semester *<select id="semester" required><option value="">Select</option><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select></label>
+          <label>GWA *<input id="gwa" type="number" step="0.01" min="0" max="100" required></label>
+          <label>Units Enrolled *<input id="unitsEnrolled" type="number" min="0" step="1" required></label>
+          <label>Failed Subjects *<input id="failedSubjects" type="number" min="0" step="1" value="0" required></label>
+          <label>Incomplete Subjects *<input id="incompleteSubjects" type="number" min="0" step="1" value="0" required></label>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn btn-light" data-close="gradeModal">Cancel</button><button type="submit" class="btn btn-primary">Submit Grades</button></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

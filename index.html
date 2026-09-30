@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | ScholarTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="login-page">
+  <div class="login-decoration decoration-1"></div>
+  <div class="login-decoration decoration-2"></div>
+  <div class="login-card">
+    <div class="login-logo">🎓</div>
+    <p class="eyebrow">SCHOLARSHIP OFFICE</p>
+    <h1>Welcome back</h1>
+    <p class="login-subtitle">Sign in to the Student Scholarship Monitoring and Academic Compliance System.</p>
+    <div id="loginMessage" class="form-message"></div>
+    <form id="loginForm">
+      <label>Email<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="••••••••"></label>
+      <button class="btn btn-primary btn-full" type="submit" id="loginBtn">Sign In</button>
+    </form>
+    <div class="login-help">
+      <strong>First time setup?</strong>
+      <p>Create a user in Supabase Authentication, then assign the user a role in the <code>profiles</code> table using the SQL instructions in README.md.</p>
+    </div>
+  </div>
+  <script src="js/supabase.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
